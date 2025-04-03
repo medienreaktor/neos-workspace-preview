@@ -5,7 +5,7 @@ namespace Flownative\WorkspacePreview\ViewHelpers;
 
 use Flownative\TokenAuthentication\Security\Model\HashAndRoles;
 use Flownative\TokenAuthentication\Security\Repository\HashAndRolesRepository;
-use Neos\ContentRepository\Domain\Model\Workspace;
+use Neos\ContentRepository\Core\SharedModel\Workspace\Workspace;
 use Neos\FluidAdaptor\Core\Rendering\RenderingContext;
 use Neos\FluidAdaptor\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
@@ -40,7 +40,7 @@ class GetHashTokenForWorkspaceViewHelper extends AbstractViewHelper
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext): ?HashAndRoles
     {
         $workspace = $arguments['workspace'];
-        $workspaceName = $workspace->getName();
+        $workspaceName = $workspace->workspaceName->value;
 
         /** @var $renderingContext RenderingContext */
         $objectManager = $renderingContext->getObjectManager();

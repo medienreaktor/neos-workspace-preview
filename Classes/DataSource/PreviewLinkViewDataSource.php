@@ -5,6 +5,7 @@ namespace Flownative\WorkspacePreview\DataSource;
 
 use Flownative\TokenAuthentication\Security\Model\HashAndRoles;
 use Flownative\TokenAuthentication\Security\Repository\HashAndRolesRepository;
+use Neos\ContentRepository\Core\Projection\ContentGraph\Node;
 use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\Controller\ControllerContext;
@@ -53,12 +54,12 @@ class PreviewLinkViewDataSource implements DataSourceInterface
     }
 
     /**
-     * @param NodeInterface|null $node
+     * @param Node|null $node
      * @param array $arguments
      * @return array
      * @throws MissingActionNameException
      */
-    public function getData(NodeInterface $node = null, array $arguments = []): array
+    public function getData(Node $node = null, array $arguments = []): array
     {
         $link = $this->getLink($node, $error);
         return [
@@ -70,12 +71,12 @@ class PreviewLinkViewDataSource implements DataSourceInterface
     }
 
     /**
-     * @param NodeInterface|null $node
+     * @param Node|null $node
      * @param string|null $error
      * @return string
      * @throws MissingActionNameException
      */
-    protected function getLink(NodeInterface $node = null, string &$error = null): string
+    protected function getLink(Node $node = null, string &$error = null): string
     {
         if ($node === null) {
             $error = self::ERROR_MISSING_NODE;

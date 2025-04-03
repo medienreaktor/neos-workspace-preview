@@ -4,8 +4,13 @@ declare(strict_types=1);
 namespace Flownative\WorkspacePreview\Controller;
 
 use Flownative\TokenAuthentication\Security\Repository\HashAndRolesRepository;
-use Neos\ContentRepository\Domain\Model\NodeInterface;
-use Neos\ContentRepository\Domain\Service\ContextFactoryInterface;
+use Neos\ContentRepository\Core\Feature\Security\Exception\AccessDenied;
+use Neos\ContentRepository\Core\Projection\ContentGraph\Filter\FindClosestNodeFilter;
+use Neos\ContentRepository\Core\Projection\ContentGraph\Node;
+use Neos\ContentRepository\Core\SharedModel\Node\NodeAddress;
+use Neos\ContentRepository\Core\SharedModel\Workspace\Workspace;
+use Neos\ContentRepository\Core\SharedModel\Workspace\WorkspaceName;
+use Neos\ContentRepositoryRegistry\ContentRepositoryRegistry;
 use Neos\Eel\FlowQuery\FlowQuery;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\ActionRequest;
@@ -13,29 +18,27 @@ use Neos\Flow\Mvc\Controller\Argument;
 use Neos\Flow\Mvc\Exception\StopActionException;
 use Neos\Flow\Security\Authentication\Controller\AbstractAuthenticationController;
 use Neos\Neos\Domain\Service\ContentContext;
+use Neos\Neos\Domain\Service\NodeTypeNameFactory;
 
 /**
  *
  */
-class HashTokenLoginController extends AbstractAuthenticationController
-{
+class HashTokenLoginController extends AbstractAuthenticationController {
     /**
      * @Flow\Inject
      * @var HashAndRolesRepository
      */
     protected $hashAndRolesRepository;
-
     /**
      * @Flow\Inject
-     * @var ContextFactoryInterface
+     * @var ContentRepositoryRegistry
      */
-    protected $contextFactory;
+    protected $contentRepositoryRegistry;
 
     /**
      * @param ActionRequest|null $originalRequest
      */
-    protected function onAuthenticationSuccess(ActionRequest $originalRequest = null)
-    {
+    protected function onAuthenticationSuccess(ActionRequest $originalRequest = null) {
         $tokenHash = $this->request->getArgument('_authenticationHashToken');
         $token = $this->hashAndRolesRepository->findByIdentifier($tokenHash);
         if (!$token) {
@@ -54,39 +57,38 @@ class HashTokenLoginController extends AbstractAuthenticationController
     /**
      * Get a possible node argument from the current request.
      *
-     * @return NodeInterface|null
+     * @return Node|null
      */
-    protected function getNodeArgumentValue(): ?NodeInterface
-    {
+    protected function getNodeArgumentValue(): Node|null {
         if (!$this->request->hasArgument('node')) {
             return null;
         }
 
-        $nodeArgument = new Argument('node', NodeInterface::class);
+        $nodeArgument = new Argument('node', Node::class);
         $nodeArgument->setValue($this->request->getArgument('node'));
         return $nodeArgument->getValue();
     }
 
     /**
-     * @param string $workspaceName
-     * @param NodeInterface|null $nodeToRedirectTo
-     * @throws StopActionException
+     * @param WorkspaceName $workspaceName
+     * @param Node|null $nodeToRedirectTo
+     * @throws AccessDenied|StopActionException
      */
-    protected function redirectToWorkspace(string $workspaceName, NodeInterface $nodeToRedirectTo = null): void
-    {
-        /** @var ContentContext $context */
-        $context = $this->contextFactory->create(['workspaceName' => $workspaceName]);
-
+    protected function redirectToWorkspace(WorkspaceName $workspaceName, Node $nodeToRedirectTo = null): void {
         $nodeInWorkspace = null;
-        if ($nodeToRedirectTo instanceof NodeInterface) {
-            $flowQuery = new FlowQuery([$nodeToRedirectTo]);
-            $nodeInWorkspace = $flowQuery->context(['workspaceName' => $workspaceName])->get(0);
+        $contentRepository = $this->contentRepositoryRegistry->get($nodeToRedirectTo->contentRepositoryId);
+        $subgraph = $contentRepository->getContentSubgraph($workspaceName, $nodeToRedirectTo->dimensionSpacePoint);
+        if ($nodeToRedirectTo instanceof Node) {
+            $nodeInWorkspace = $subgraph->findNodeById($nodeToRedirectTo->aggregateId);
         }
 
         if ($nodeInWorkspace === null) {
-            $nodeInWorkspace = $context->getCurrentSiteNode();
+            $nodeInWorkspace = $subgraph->findClosestNode($nodeToRedirectTo->aggregateId,
+                FindClosestNodeFilter::create(nodeTypes: NodeTypeNameFactory::NAME_SITE));
         }
 
-        $this->redirect('preview', 'Frontend\Node', 'Neos.Neos', ['node' => $nodeInWorkspace]);
+        $address = NodeAddress::fromNode($nodeInWorkspace)->toJson();
+
+        $this->redirect('preview', 'Frontend\Node', 'Neos.Neos', ['node' => $address]);
     }
 }

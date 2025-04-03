@@ -5,7 +5,7 @@ namespace Flownative\WorkspacePreview\Fusion;
 
 use Neos\Flow\Annotations as Flow;
 use Neos\Neos\Domain\Exception as DomainException;
-use Neos\Neos\Domain\Service\UserInterfaceModeService;
+use Neos\Neos\Domain\Service\RenderingModeService;
 use Neos\Neos\Fusion\ConvertUrisImplementation as OriginalImplementation;
 
 class ConvertUrisImplementation extends OriginalImplementation
@@ -13,9 +13,9 @@ class ConvertUrisImplementation extends OriginalImplementation
 
     /**
      * @Flow\Inject
-     * @var UserInterfaceModeService
+     * @var RenderingModeService
      */
-    protected $interfaceRenderModeService;
+    protected $renderingModeService;
 
     /**
      * @return string
@@ -23,10 +23,10 @@ class ConvertUrisImplementation extends OriginalImplementation
      */
     public function evaluate(): string
     {
-        $currentRenderingMode = $this->interfaceRenderModeService->findModeByCurrentUser();
+        $currentRenderingMode = $this->renderingModeService->findByCurrentUser();
         $forceConversionPathPart = 'forceConversion';
 
-        if ($currentRenderingMode->isEdit() === false) {
+        if ($currentRenderingMode->isEdit === false) {
             $fullPath = $this->path . '/' . $forceConversionPathPart;
             $this->fusionValueCache[$fullPath] = true;
         }

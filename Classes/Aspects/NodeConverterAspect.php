@@ -4,7 +4,7 @@ namespace Flownative\WorkspacePreview\Aspects;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Aop\JoinPointInterface;
 use Neos\Flow\Security\Context;
-use Neos\Neos\Domain\Service\UserInterfaceModeService;
+use Neos\Neos\Domain\Service\RenderingModeService;
 
 /**
  * @Flow\Scope("singleton")
@@ -21,9 +21,9 @@ class NodeConverterAspect
 
     /**
      * @Flow\Inject
-     * @var UserInterfaceModeService
+     * @var RenderingModeService
      */
-    protected $userInterfaceModeService;
+    protected $renderingModeService;
 
     /**
      * @Flow\Around("method(Neos\ContentRepository\TypeConverter\NodeConverter->prepareContextProperties())")
@@ -39,7 +39,7 @@ class NodeConverterAspect
             if (
                 $workspaceName !== 'live'
                 && (
-                    $this->userInterfaceModeService->findModeByCurrentUser()->isPreview()
+                    $this->renderingModeService->findByCurrentUser()->isPreview
                     || $this->securityContext->hasRole('Flownative.WorkspacePreview:WorkspacePreviewer')
                 )
             ) {

@@ -5,6 +5,8 @@ namespace Flownative\WorkspacePreview;
 
 use Flownative\TokenAuthentication\Security\Model\HashAndRoles;
 use Flownative\TokenAuthentication\Security\Repository\HashAndRolesRepository;
+use Neos\ContentRepository\Core\SharedModel\Workspace\Workspace;
+use Neos\ContentRepository\Core\SharedModel\Workspace\WorkspaceName;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Utility\Algorithms;
 
@@ -27,9 +29,9 @@ class WorkspacePreviewTokenFactory
      * @param string $workspaceName
      * @return HashAndRoles
      */
-    public function create(string $workspaceName): HashAndRoles
+    public function create(WorkspaceName $workspaceName): HashAndRoles
     {
-        $tokenMetadata = HashAndRoles::createWithHashRolesAndSettings(Algorithms::generateRandomString(64), ['Flownative.WorkspacePreview:WorkspacePreviewer'], ['workspaceName' => $workspaceName]);
+        $tokenMetadata = HashAndRoles::createWithHashRolesAndSettings(Algorithms::generateRandomString(64), ['Flownative.WorkspacePreview:WorkspacePreviewer'], ['workspaceName' => $workspaceName->value]);
         $this->hashAndRolesRepository->add($tokenMetadata);
 
         return $tokenMetadata;
@@ -41,7 +43,7 @@ class WorkspacePreviewTokenFactory
      * @param string $workspaceName
      * @return HashAndRoles
      */
-    public function refresh(string $workspaceName): HashAndRoles
+    public function refresh(WorkspaceName $workspaceName): HashAndRoles
     {
         $this->removeExistingWorkspacePreviewFor($workspaceName);
 
@@ -54,7 +56,7 @@ class WorkspacePreviewTokenFactory
      * @param string $workspaceName
      * @return void
      */
-    protected function removeExistingWorkspacePreviewFor(string $workspaceName): void
+    protected function removeExistingWorkspacePreviewFor(WorkspaceName $workspaceName): void
     {
         $allWorkspacePreviewTokens = $this->hashAndRolesRepository->findByRoles(['Flownative.WorkspacePreview:WorkspacePreviewer']);
         /** @var HashAndRoles $workspacePreviewToken */
