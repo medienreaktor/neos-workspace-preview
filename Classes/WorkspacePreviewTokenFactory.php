@@ -8,6 +8,7 @@ use Flownative\TokenAuthentication\Security\Repository\HashAndRolesRepository;
 use Neos\ContentRepository\Core\SharedModel\Workspace\Workspace;
 use Neos\ContentRepository\Core\SharedModel\Workspace\WorkspaceName;
 use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Persistence\Doctrine\PersistenceManager;
 use Neos\Flow\Utility\Algorithms;
 
 /**
@@ -22,6 +23,11 @@ class WorkspacePreviewTokenFactory
      * @var HashAndRolesRepository
      */
     protected $hashAndRolesRepository;
+    /**
+     * @Flow\Inject
+     * @var PersistenceManager
+     */
+    protected $persistenceManager;
 
     /**
      * Creates a token to preview the given workspace.
@@ -33,7 +39,7 @@ class WorkspacePreviewTokenFactory
     {
         $tokenMetadata = HashAndRoles::createWithHashRolesAndSettings(Algorithms::generateRandomString(64), ['Flownative.WorkspacePreview:WorkspacePreviewer'], ['workspaceName' => $workspaceName->value]);
         $this->hashAndRolesRepository->add($tokenMetadata);
-
+        $this->persistenceManager->persistAll();
         return $tokenMetadata;
     }
 

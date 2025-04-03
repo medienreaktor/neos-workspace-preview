@@ -2,7 +2,6 @@ import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import Clipboard from 'react-clipboard.js';
 import {dataLoader} from '@neos-project/neos-ui-views';
-import {$get} from "plow-js";
 import {neos} from '@neos-project/neos-ui-decorators';
 import {Icon, Button} from '@neos-project/react-ui-components';
 
@@ -16,8 +15,8 @@ export default class LinkView extends PureComponent {
   };
 
   render() {
-    const linkUrl = $get(['link'], this.props.data);
-    const error = $get(['error'], this.props.data);
+    const linkUrl = this.props.data.link;
+    const error = this.props.data.error;
 
     if (error !== 'none') {
       return (

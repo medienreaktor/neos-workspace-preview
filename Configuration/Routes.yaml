@@ -1,5 +1,5 @@
 - name: 'HashToken Login'
-  uriPattern: '_token-login/hash-token-login'
+  uriPattern: 'token-login/hash-token-login'
   defaults:
     '@package':    'Flownative.WorkspacePreview'
     '@controller': 'HashTokenLogin'

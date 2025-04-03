@@ -27,6 +27,9 @@ Neos:
         'Flownative.WorkspacePreview': true
 
   Neos:
+    fusion:
+      autoInclude:
+        Neos.WorkspacePreview: true
     userInterface:
       translation:
         autoInclude:

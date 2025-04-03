@@ -4,10 +4,13 @@ declare(strict_types=1);
 namespace Flownative\WorkspacePreview\Controller;
 
 use Flownative\TokenAuthentication\Security\Repository\HashAndRolesRepository;
+use Neos\ContentRepository\Core\DimensionSpace\DimensionSpacePoint;
 use Neos\ContentRepository\Core\Feature\Security\Exception\AccessDenied;
 use Neos\ContentRepository\Core\Projection\ContentGraph\Filter\FindClosestNodeFilter;
 use Neos\ContentRepository\Core\Projection\ContentGraph\Node;
+use Neos\ContentRepository\Core\SharedModel\ContentRepository\ContentRepositoryId;
 use Neos\ContentRepository\Core\SharedModel\Node\NodeAddress;
+use Neos\ContentRepository\Core\SharedModel\Node\NodeAggregateId;
 use Neos\ContentRepository\Core\SharedModel\Workspace\Workspace;
 use Neos\ContentRepository\Core\SharedModel\Workspace\WorkspaceName;
 use Neos\ContentRepositoryRegistry\ContentRepositoryRegistry;
@@ -49,41 +52,29 @@ class HashTokenLoginController extends AbstractAuthenticationController {
         if (empty($workspaceName)) {
             return;
         }
+        $workspaceName = WorkspaceName::fromString($workspaceName);
 
-        $possibleNode = $this->getNodeArgumentValue();
-        $this->redirectToWorkspace($workspaceName, $possibleNode);
+        $nodeAggregateId = NodeAggregateId::fromString($this->request->getArgument("aggregateId"));
+        $dimensionSpacePoint = DimensionSpacePoint::fromJsonString($this->request->getArgument("dimensionSpacePoint"));
+        $this->redirectToWorkspace($workspaceName, $nodeAggregateId, $dimensionSpacePoint);
     }
 
-    /**
-     * Get a possible node argument from the current request.
-     *
-     * @return Node|null
-     */
-    protected function getNodeArgumentValue(): Node|null {
-        if (!$this->request->hasArgument('node')) {
-            return null;
-        }
-
-        $nodeArgument = new Argument('node', Node::class);
-        $nodeArgument->setValue($this->request->getArgument('node'));
-        return $nodeArgument->getValue();
-    }
 
     /**
      * @param WorkspaceName $workspaceName
      * @param Node|null $nodeToRedirectTo
      * @throws AccessDenied|StopActionException
      */
-    protected function redirectToWorkspace(WorkspaceName $workspaceName, Node $nodeToRedirectTo = null): void {
+    protected function redirectToWorkspace(WorkspaceName $workspaceName, NodeAggregateId $nodeToRedirectTo = null, DimensionSpacePoint $dimensionSpacePoint = null): void {
         $nodeInWorkspace = null;
-        $contentRepository = $this->contentRepositoryRegistry->get($nodeToRedirectTo->contentRepositoryId);
-        $subgraph = $contentRepository->getContentSubgraph($workspaceName, $nodeToRedirectTo->dimensionSpacePoint);
-        if ($nodeToRedirectTo instanceof Node) {
-            $nodeInWorkspace = $subgraph->findNodeById($nodeToRedirectTo->aggregateId);
+        $contentRepository = $this->contentRepositoryRegistry->get(ContentRepositoryId::fromString("default"));
+        $subgraph = $contentRepository->getContentSubgraph($workspaceName, $dimensionSpacePoint);
+        if ($nodeToRedirectTo instanceof NodeAggregateId) {
+            $nodeInWorkspace = $subgraph->findNodeById($nodeToRedirectTo);
         }
 
         if ($nodeInWorkspace === null) {
-            $nodeInWorkspace = $subgraph->findClosestNode($nodeToRedirectTo->aggregateId,
+            $nodeInWorkspace = $subgraph->findClosestNode($nodeToRedirectTo,
                 FindClosestNodeFilter::create(nodeTypes: NodeTypeNameFactory::NAME_SITE));
         }
 

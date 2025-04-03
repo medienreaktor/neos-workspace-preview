@@ -1,5 +1,5 @@
-- requestFilter: 'parentRequest.isPackage("Neos.Neos") && isFormat("html") && isController("Module\Management\Workspaces")'
+- requestFilter: 'isPackage("Neos.Workspace.Ui") && isController("Workspace")'
+  viewObjectName: 'Neos\Fusion\View\FusionView'
   options:
-    templateRootPaths:
-      'Flownative.WorkspacePreview': 'resource://Flownative.WorkspacePreview/Private/Templates'
-      'Neos.Neos': 'resource://Neos.Neos/Private/Templates'
+    fusionPathPatterns:
+      - 'resource://Flownative.WorkspacePreview/Private/Fusion'

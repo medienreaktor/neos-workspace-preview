@@ -5,6 +5,7 @@ namespace Flownative\WorkspacePreview\Controller;
 
 use Flownative\WorkspacePreview\WorkspacePreviewTokenFactory;
 use Neos\ContentRepository\Core\SharedModel\Workspace\Workspace;
+use Neos\ContentRepository\Core\SharedModel\Workspace\WorkspaceName;
 use Neos\Error\Messages\Message;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\Controller\ActionController;
@@ -25,10 +26,10 @@ class HashTokenRefreshController extends ActionController
      *
      * @param Workspace $workspace
      */
-    public function refreshHashTokenForWorkspaceAction(Workspace $workspace): void
+    public function refreshHashTokenForWorkspaceAction(string $workspaceName): void
     {
-        $this->workspacePreviewTokenFactory->refresh($workspace->workspaceName);
-        $this->addFlashMessage('A new preview token has been generated for workspace "%s", the old one is invalid now!', '', Message::SEVERITY_OK, [$workspace->getTitle()]);
-        $this->redirectToRequest($this->request->getReferringRequest());
+        $this->workspacePreviewTokenFactory->refresh(WorkspaceName::fromString($workspaceName));
+        $this->addFlashMessage('A new preview token has been generated for workspace "%s", the old one is invalid now!', '', Message::SEVERITY_OK, [$workspaceName]);
+        $this->redirect("index", "Workspace", "Neos.Workspace.Ui");
     }
 }

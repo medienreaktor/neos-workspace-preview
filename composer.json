@@ -12,7 +12,8 @@
     ],
     "require": {
         "flownative/token-authentication": "dev-main",
-        "neos/neos": "^5.3 || ^7.0 || ^8.0 || ^9.0"
+        "neos/neos": "^5.3 || ^7.0 || ^8.0 || ^9.0",
+        "neos/workspace-ui": "*"
     },
     "autoload": {
         "psr-4": {
@@ -20,6 +21,9 @@
         }
     },
     "extra": {
+        "neos": {
+            "package-key": "Flownative.WorkspacePreview"
+        },
         "applied-flow-migrations": [
             "TYPO3.Form-20160601101500",
             "Neos.Twitter.Bootstrap-20161124204912",
