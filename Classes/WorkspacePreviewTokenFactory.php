@@ -37,7 +37,8 @@ class WorkspacePreviewTokenFactory
      */
     public function create(WorkspaceName $workspaceName): HashAndRoles
     {
-        $tokenMetadata = HashAndRoles::createWithHashRolesAndSettings(Algorithms::generateRandomString(64), ['Flownative.WorkspacePreview:WorkspacePreviewer'], ['workspaceName' => $workspaceName->value]);
+        $tokenMetadata = HashAndRoles::createWithHashRolesAndSettings(Algorithms::generateRandomString(64),
+            ['Flownative.WorkspacePreview:WorkspacePreviewer'], ['workspaceName' => $workspaceName->value]);
         $this->hashAndRolesRepository->add($tokenMetadata);
         $this->persistenceManager->persistAll();
         return $tokenMetadata;
@@ -68,7 +69,7 @@ class WorkspacePreviewTokenFactory
         /** @var HashAndRoles $workspacePreviewToken */
         foreach ($allWorkspacePreviewTokens as $workspacePreviewToken) {
             $tokenWorkspaceName = $workspacePreviewToken->getSettings()['workspaceName'] ?? null;
-            if ($tokenWorkspaceName === $workspaceName) {
+            if ($tokenWorkspaceName === $workspaceName->value) {
                 $this->hashAndRolesRepository->remove($workspacePreviewToken);
             }
         }

@@ -20,7 +20,9 @@ use Neos\Flow\Mvc\ActionRequest;
 use Neos\Flow\Mvc\Controller\Argument;
 use Neos\Flow\Mvc\Exception\StopActionException;
 use Neos\Flow\Security\Authentication\Controller\AbstractAuthenticationController;
-use Neos\Neos\Domain\Service\ContentContext;
+use Neos\Neos\Domain\Model\WorkspaceRole;
+use Neos\Neos\Domain\Model\WorkspaceRoleAssignment;
+use Neos\Neos\Domain\Repository\WorkspaceMetadataAndRoleRepository;
 use Neos\Neos\Domain\Service\NodeTypeNameFactory;
 
 /**
@@ -39,6 +41,12 @@ class HashTokenLoginController extends AbstractAuthenticationController {
     protected $contentRepositoryRegistry;
 
     /**
+     * @Flow\Inject
+     * @var WorkspaceMetadataAndRoleRepository
+     */
+    protected $workspaceMetadataAndRoleRepository;
+
+    /**
      * @param ActionRequest|null $originalRequest
      */
     protected function onAuthenticationSuccess(ActionRequest $originalRequest = null) {
@@ -54,9 +62,16 @@ class HashTokenLoginController extends AbstractAuthenticationController {
         }
         $workspaceName = WorkspaceName::fromString($workspaceName);
 
+        $contentRepositoryId = ContentRepositoryId::fromString("default");
+
+//        $this->workspaceMetadataAndRoleRepository->assignWorkspaceRole($contentRepositoryId, $workspaceName,
+//            WorkspaceRoleAssignment::createForGroup("Flownative.WorkspacePreview:WorkspacePreviewer", WorkspaceRole::VIEWER));
+//
+
         $nodeAggregateId = NodeAggregateId::fromString($this->request->getArgument("aggregateId"));
         $dimensionSpacePoint = DimensionSpacePoint::fromJsonString($this->request->getArgument("dimensionSpacePoint"));
-        $this->redirectToWorkspace($workspaceName, $nodeAggregateId, $dimensionSpacePoint);
+        $this->redirectToWorkspace($contentRepositoryId, $workspaceName, $nodeAggregateId, $dimensionSpacePoint);
+
     }
 
 
@@ -65,9 +80,9 @@ class HashTokenLoginController extends AbstractAuthenticationController {
      * @param Node|null $nodeToRedirectTo
      * @throws AccessDenied|StopActionException
      */
-    protected function redirectToWorkspace(WorkspaceName $workspaceName, NodeAggregateId $nodeToRedirectTo = null, DimensionSpacePoint $dimensionSpacePoint = null): void {
+    protected function redirectToWorkspace(ContentRepositoryId $contentRepositoryId, WorkspaceName $workspaceName, NodeAggregateId $nodeToRedirectTo = null, DimensionSpacePoint $dimensionSpacePoint = null): void {
         $nodeInWorkspace = null;
-        $contentRepository = $this->contentRepositoryRegistry->get(ContentRepositoryId::fromString("default"));
+        $contentRepository = $this->contentRepositoryRegistry->get($contentRepositoryId);
         $subgraph = $contentRepository->getContentSubgraph($workspaceName, $dimensionSpacePoint);
         if ($nodeToRedirectTo instanceof NodeAggregateId) {
             $nodeInWorkspace = $subgraph->findNodeById($nodeToRedirectTo);

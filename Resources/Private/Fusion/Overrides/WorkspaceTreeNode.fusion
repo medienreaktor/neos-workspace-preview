@@ -92,10 +92,10 @@ prototype(Neos.Workspace.Ui:Component.WorkspaceTableRow) {
           attributes.hx-on--after-request={'document.getElementById("' + private.rebaseWorkspacePopoverId + '")?.showPopover()'}
         />
         <Neos.Workspace.Ui:Component.Button
-          isDanger
-          title={private.i18n.id('workspaces.rebaseWorkspace').arguments([props.workspaceListItem.title])}
+          label={"(Re-)Generate"}
           icon="sync icon-white"
           attributes.hx-post={props.refreshHashTokenForWorkspaceUri}
+          attributes.hx-swap='none'
         />
       </td>
     </tr>

@@ -2,12 +2,8 @@ privilegeTargets:
   'Neos\Flow\Security\Authorization\Privilege\Method\MethodPrivilege':
     'Flownative.WorkspacePreview:AuthenticateByToken':
       matcher: 'method(Flownative\WorkspacePreview\Controller\HashTokenLoginController->(?!initialize).*Action())'
-
-
-    'Flownative.WorkspacePreview:PreviewWorkspaceByToken':
-      matcher: 'method(Neos\ContentRepository\Domain\Service\Context->validateWorkspace(workspace.name === current.tokenInformer.token.settings.workspaceName))'
     'Flownative.WorkspacePreview:PreviewNodeByToken':
-      matcher: 'method(Neos\Neos\Controller\Frontend\NodeController->previewAction(node.context.workspace.name === current.tokenInformer.token.settings.workspaceName))'
+      matcher: 'method(Neos\Neos\Controller\Frontend\NodeController->previewAction(node.workspaceName.value == "test"))'
 
     'Flownative.WorkspacePreview:RefreshHashTokenForWorkspace':
       matcher: 'method(Flownative\WorkspacePreview\Controller\HashTokenRefreshController->refreshHashTokenForWorkspaceAction())'
@@ -20,8 +16,6 @@ roles:
   # Do not rename this role, the name is used in code.
   'Flownative.WorkspacePreview:WorkspacePreviewer':
     privileges:
-      - privilegeTarget: 'Flownative.WorkspacePreview:PreviewWorkspaceByToken'
-        permission: GRANT
       - privilegeTarget: 'Flownative.WorkspacePreview:PreviewNodeByToken'
         permission: GRANT
   'Neos.Neos:Administrator':

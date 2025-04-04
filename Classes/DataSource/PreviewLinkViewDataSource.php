@@ -8,8 +8,10 @@ use Flownative\TokenAuthentication\Security\Repository\HashAndRolesRepository;
 use GuzzleHttp\Psr7\ServerRequest;
 use Neos\ContentRepository\Core\Projection\ContentGraph\Filter\FindClosestNodeFilter;
 use Neos\ContentRepository\Core\Projection\ContentGraph\Node;
+use Neos\ContentRepository\Core\SharedModel\Node\NodeAddress;
 use Neos\ContentRepositoryRegistry\ContentRepositoryRegistry;
 use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Http\Helper\UriHelper;
 use Neos\Flow\Mvc\ActionRequest;
 use Neos\Flow\Mvc\Controller\ControllerContext;
 use Neos\Flow\Mvc\Routing\Exception\MissingActionNameException;
@@ -18,9 +20,12 @@ use Neos\Neos\Domain\Model\SiteNodeName;
 use Neos\Neos\Domain\Repository\SiteRepository;
 use Neos\Neos\Domain\Service\NodeTypeNameFactory;
 use Neos\Neos\Domain\Service\WorkspaceService;
+use Neos\Neos\FrontendRouting\NodeUriBuilderFactory;
+use Neos\Neos\FrontendRouting\Options;
 use Neos\Neos\FrontendRouting\SiteDetection\SiteDetectionResult;
 use Neos\Neos\Service\DataSource\DataSourceInterface;
 use Neos\Neos\Service\UserService;
+use Psr\Http\Message\UriInterface;
 
 /**
  *
@@ -36,6 +41,12 @@ class PreviewLinkViewDataSource implements DataSourceInterface {
      * @var UriBuilder
      */
     protected $uriBuilder;
+
+    /**
+     * @Flow\Inject
+     * @var NodeUriBuilderFactory
+     */
+    protected $nodeUriBuilderFactory;
 
     /**
      * @var ControllerContext
@@ -121,14 +132,20 @@ class PreviewLinkViewDataSource implements DataSourceInterface {
             return '';
         }
 
-        $uriBuilder = $this->uriBuilder->reset()->setCreateAbsoluteUri(true);
-        $uriBuilder->setRequest($this->createActionRequest($node));
-        $url = $uriBuilder
-            ->uriFor('authenticate', [
+        $actionRequest = $this->createActionRequest($node);
+
+        $this->uriBuilder->setRequest($actionRequest->getMainRequest());
+        $this->uriBuilder->setCreateAbsoluteUri(true);
+        $url = $this->uriBuilder->uriFor("authenticate",
+
+            [
                 '_authenticationHashToken' => $hashAndRoles->getHash(),
                 'aggregateId' => $node->aggregateId->value,
                 'dimensionSpacePoint'=>$node->dimensionSpacePoint->toJson()
-            ], 'HashTokenLogin', 'Flownative.WorkspacePreview');
+            ],
+            "HashTokenLogin",
+            "Flownative.WorkspacePreview",
+        );
         $error = self::ERROR_NONE;
         return $url;
     }
@@ -149,6 +166,7 @@ class PreviewLinkViewDataSource implements DataSourceInterface {
             return $foundToken;
         }, null);
     }
+
 
 
      /**

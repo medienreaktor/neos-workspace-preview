@@ -30,6 +30,6 @@ class HashTokenRefreshController extends ActionController
     {
         $this->workspacePreviewTokenFactory->refresh(WorkspaceName::fromString($workspaceName));
         $this->addFlashMessage('A new preview token has been generated for workspace "%s", the old one is invalid now!', '', Message::SEVERITY_OK, [$workspaceName]);
-        $this->redirect("index", "Workspace", "Neos.Workspace.Ui");
+        $this->forward("index", "Workspace", "Neos.Workspace.Ui");
     }
 }
