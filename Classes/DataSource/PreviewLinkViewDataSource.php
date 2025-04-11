@@ -132,6 +132,8 @@ class PreviewLinkViewDataSource implements DataSourceInterface {
             return '';
         }
 
+        $address = NodeAddress::fromNode($node)->toJson();
+
         $actionRequest = $this->createActionRequest($node);
 
         $this->uriBuilder->setRequest($actionRequest->getMainRequest());
@@ -140,8 +142,7 @@ class PreviewLinkViewDataSource implements DataSourceInterface {
 
             [
                 '_authenticationHashToken' => $hashAndRoles->getHash(),
-                'aggregateId' => $node->aggregateId->value,
-                'dimensionSpacePoint'=>$node->dimensionSpacePoint->toJson()
+                'node' => $address
             ],
             "HashTokenLogin",
             "Flownative.WorkspacePreview",

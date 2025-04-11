@@ -3,7 +3,7 @@ privilegeTargets:
     'Flownative.WorkspacePreview:AuthenticateByToken':
       matcher: 'method(Flownative\WorkspacePreview\Controller\HashTokenLoginController->(?!initialize).*Action())'
     'Flownative.WorkspacePreview:PreviewNodeByToken':
-      matcher: 'method(Neos\Neos\Controller\Frontend\NodeController->previewAction(node.workspaceName.value == "test"))'
+      matcher: 'method(Neos\Neos\Controller\Frontend\NodeController->previewAction())'
 
     'Flownative.WorkspacePreview:RefreshHashTokenForWorkspace':
       matcher: 'method(Flownative\WorkspacePreview\Controller\HashTokenRefreshController->refreshHashTokenForWorkspaceAction())'

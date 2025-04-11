@@ -62,16 +62,17 @@ class HashTokenLoginController extends AbstractAuthenticationController {
         }
         $workspaceName = WorkspaceName::fromString($workspaceName);
 
-        $contentRepositoryId = ContentRepositoryId::fromString("default");
 
 //        $this->workspaceMetadataAndRoleRepository->assignWorkspaceRole($contentRepositoryId, $workspaceName,
 //            WorkspaceRoleAssignment::createForGroup("Flownative.WorkspacePreview:WorkspacePreviewer", WorkspaceRole::VIEWER));
 //
 
-        $nodeAggregateId = NodeAggregateId::fromString($this->request->getArgument("aggregateId"));
-        $dimensionSpacePoint = DimensionSpacePoint::fromJsonString($this->request->getArgument("dimensionSpacePoint"));
-        $this->redirectToWorkspace($contentRepositoryId, $workspaceName, $nodeAggregateId, $dimensionSpacePoint);
+        $nodeAddress = NodeAddress::fromJsonString($this->request->getArgument("node"));
 
+        $nodeAggregateId = $nodeAddress->aggregateId;
+        $dimensionSpacePoint = $nodeAddress->dimensionSpacePoint;
+        $contentRepositoryId = $nodeAddress->contentRepositoryId;
+        $this->redirectToWorkspace($contentRepositoryId, $workspaceName, $nodeAggregateId, $dimensionSpacePoint);
     }
 
 
