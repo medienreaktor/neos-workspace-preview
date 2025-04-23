@@ -13,7 +13,8 @@
     "require": {
         "flownative/token-authentication": "dev-main",
         "neos/neos": "^5.3 || ^7.0 || ^8.0 || ^9.0",
-        "neos/workspace-ui": "*"
+        "neos/workspace-ui": "*",
+        "medienreaktor/neos-auth-chain": "*"
     },
     "autoload": {
         "psr-4": {
