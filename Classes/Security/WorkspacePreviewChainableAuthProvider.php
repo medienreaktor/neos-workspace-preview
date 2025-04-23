@@ -21,7 +21,7 @@ use Neos\Neos\Domain\Service\UserService;
 use Neos\Neos\Security\Authorization\ContentRepositoryAuthorizationService;
 use Neos\Neos\Security\ContentRepositoryAuthProvider\ContentRepositoryAuthProvider;
 
-class WorkspacePreviewAuthMiddleware extends AbstractChainableAuthProvider {
+class WorkspacePreviewChainableAuthProvider extends AbstractChainableAuthProvider {
 
     #[InjectConfiguration(path: "authenticationProviderName", package: "Flownative.TokenAuthentication")]
     protected $authenticationProviderName;
