@@ -28,9 +28,6 @@ class WorkspacePreviewAuthMiddleware extends AbstractChainableAuthProvider {
     #[Inject]
     protected HashAndRolesRepository $hashAndRolesRepository;
 
-    #[Inject]
-    protected SecurityContext $securityContext;
-
     public function canReadNodesFromWorkspace(WorkspaceName $workspaceName, Privilege $currentValue, callable $next): Privilege {
         if ($this->securityContext->canBeInitialized() !== true) {
             return $next($currentValue);

@@ -47,6 +47,6 @@ Flownative:
 Medienreaktor:
   AuthChain:
     chain:
-      workspacePreview:
+      'Flownative.WorkspacePreview:WorkspacePreview':
         class: Flownative\WorkspacePreview\Security\WorkspacePreviewAuthMiddleware
-        position: 43000
+        position: 'after Medienreaktor.AuthChain:Test1'
