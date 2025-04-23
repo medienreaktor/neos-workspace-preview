@@ -49,4 +49,3 @@ Medienreaktor:
     chain:
       'Flownative.WorkspacePreview:WorkspacePreview':
         class: Flownative\WorkspacePreview\Security\WorkspacePreviewChainableAuthProvider
-        position: 'after Medienreaktor.AuthChain:Test1'
