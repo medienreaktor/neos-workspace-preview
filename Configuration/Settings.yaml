@@ -41,11 +41,12 @@ Neos:
         javascript:
           'Flownative.WorkspacePreview:Addons':
             resource: '${"resource://Flownative.WorkspacePreview/Public/LinkView/Plugin.js"}'
+
+  ContentRepositoryRegistry:
+    presets:
+      'default':
+        authProvider:
+          factoryObjectName: Flownative\WorkspacePreview\Security\WorkspacePreviewAuthProviderFactory
 Flownative:
   TokenAuthentication:
     authenticationProviderName: 'Flownative.WorkspacePreview:TokenAuthenticator'
-Medienreaktor:
-  AuthChain:
-    chain:
-      'Flownative.WorkspacePreview:WorkspacePreview':
-        class: Flownative\WorkspacePreview\Security\WorkspacePreviewChainableAuthProvider

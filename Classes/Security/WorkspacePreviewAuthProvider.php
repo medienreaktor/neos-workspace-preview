@@ -50,7 +50,6 @@ class WorkspacePreviewAuthProvider implements AuthProviderInterface {
         }
 
         $account = $this->securityContext->getAccountByAuthenticationProviderName($this->authenticationProviderName);
-
         if ($account === null) {
             return $this->contentRepositoryAuthProvider->canReadNodesFromWorkspace($workspaceName);
         }
