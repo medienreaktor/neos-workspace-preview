@@ -21,8 +21,14 @@ Neos:
                 pattern: ControllerObjectName
                 patternOptions:
                   controllerObjectNamePattern: 'Flownative\WorkspacePreview\Controller\.*'
-
     mvc:
+      flashMessages:
+        containers:
+          'Neos.Workspace.Ui:httpHeaderFlashMessages':
+            storage: 'Neos\Workspace\Ui\Mvc\HttpHeaderFlashMessageStorage'
+            requestPatterns:
+              'htmx':
+                pattern: 'Flownative\WorkspacePreview\Mvc\HtmxRequestPattern'
       routes:
         'Flownative.WorkspacePreview': true
 
